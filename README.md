@@ -1,2 +1,2 @@
-# Slack-CloneNext
-this is clone of slack with some UI changes
+# NextJs-AuthBoilerPlate
+This is for authentication usnig nextjs
