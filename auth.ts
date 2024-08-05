@@ -14,8 +14,8 @@ export const {
   signOut,
 } = NextAuth({
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
+    signIn: "/login",
+    error: "/error",
   },
   events: {
     async linkAccount({ user }) {
@@ -52,6 +52,7 @@ export const {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
+      (session as any).accessToken = token.accessToken;
 
       if (token.role && session.user) {
         session.user.role = token.role;
@@ -69,9 +70,11 @@ export const {
 
       return session;
     },
-    async jwt({ token }) {
+    async jwt({ token ,user }) {
       if (!token.sub) return token;
-
+      if (user) {
+        token.accessToken = (user as any).accessToken;
+      }
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
 
@@ -86,6 +89,10 @@ export const {
     },
   },
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 10000,
+  },
+  secret: process.env.AUTH_SECRET,
   ...authConfig,
 });

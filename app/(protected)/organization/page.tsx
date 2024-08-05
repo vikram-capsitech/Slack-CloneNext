@@ -9,173 +9,131 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import axios from "axios";
 import ImageDropZone from "@/components/image-upload";
+import React from "react";
+import apiClient from "@/helpers/ApiUtility";
+import { FaUser } from "react-icons/fa";
+import Image from "next/image";
+import { currentUser } from "@/lib/auth";
 
 const OrganizationSetup = () => {
-  const { currStep } = useCreateWorkspaceValues();
+  const [organizations,setOrganizations] = React.useState<any[]>([])
+  const user:any = useCurrentUser();
 
-  let stepInView = null;
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await apiClient.get('/api/organization/list');
+      debugger
+      if (response.data.status) {
+        console.log(response.data.items);
+        setOrganizations(response.data.items ?? [])
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  switch (currStep) {
-    case 1:
-      stepInView = <Step1 />;
-      break;
-    case 2:
-      stepInView = <Step2 />;
-      break;
-    default:
-      stepInView = <Step1 />;
-  }
-
+  fetchData();
+}, []);
 
   return (
-    <div>
-      {/* <InitialModal /> */}
-      <div className="w-screen h-screen grid place-content-center bg-neutral-800 text-white">
-        <div className="p-3 max-w-[550px]">
-          <Typography
-            text={`step ${currStep} of 2`}
-            variant="p"
-            className="text-neutral-400"
-          />
+<div className="h-full bg-purple-800 flex flex-col items-center justify-center">
+      <div className="bg-white rounded-lg p-8 shadow-lg w-full max-w-md">
+      <h1 className="text-2xl font-bold mb-2 text-center">Welcome back</h1>
 
-          {stepInView}
-        </div>
+    <p className="text-sm mb-2 overflow-scroll">Workspaces for {user.email}</p>
+        {organizations.map((org)=>{
+          return(
+            <Card name={org.name} image={org.imageUrl} id={org.id} members={org.members} />
+          )
+        })}
+        <div className="bg-white p-4 flex-col rounded-lg flex items-center shadow-md">
+    <p className="mb-1">Want to use Scraawl with your team?</p>
+    <Button onClick={()=>{
+      redirect('/organization/create')
+    }}>Create a new workspace</Button>
+  </div>
       </div>
+      <div className="text-white mt-4">
+    <p>
+      Not seeing your workspace?{" "}
+      <a href="/login" className="underline">
+        Try using a different email
+      </a>
+    </p>
+  </div>
     </div>
   );
 };
 
 export default OrganizationSetup;
 
-const Step1 = () => {
-  const { name, updateValues, setCurrStep } = useCreateWorkspaceValues();
+
+interface CardProps {
+  name: string;
+  image: string;
+  id:string;
+  members:any[]
+}
+
+const Card: React.FC<CardProps> = ({ name, image,id,members }) => {
+  const maxDisplayMembers = 4;
+  const displayedMembers = members.slice(0, maxDisplayMembers);
+  const remainingMembersCount = members.length - maxDisplayMembers;
 
   return (
-    <>
-      <Typography
-        text="What is the name of your company or team"
-        className="my-4"
-      />
-
-      <Typography
-        text="This will be the name of your Scraawl workspace - choose something that your team will recognize."
-        className="text-neutral-300"
-        variant="p"
-      />
-
-      <form className="mt-6">
-        <fieldset>
-          <Input
-            className="bg-neutral-700 text-white border-neutral-600"
-            type="text"
-            value={name}
-            placeholder="Enter your company name"
-            onChange={(event) => updateValues({ name: event.target.value })}
-          />
-          <Button
-            type="button"
-            className="mt-10 float-right"
-            onClick={() => setCurrStep(2)}
-            disabled={!name}
-          >
-            <Typography text="Next" variant="p" />
-          </Button>
-        </fieldset>
-      </form>
-    </>
+    <div className="bg-purple-200 p-4 rounded-lg mb-4">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center">
+        <Image
+        className="rounded-full ring-2 h-12 w-12"
+          src={image}
+          alt="Simpliexpand Logo"
+          width={40}
+          height={40}
+        />
+        <div className="ml-2">
+          <p className="font-semibold">{name}</p>
+          <div className="flex -space-x-2 overflow-hidden">
+            {displayedMembers.map((member, index) => (
+              <Avatar imageUrl={member.imageUrl} name={member.name}/>
+              ))}
+              {remainingMembersCount > 0 && (
+                <span className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-gray-300 text-xs flex items-center justify-center">
+                  +{remainingMembersCount}
+                </span>
+              )}
+          </div>
+        </div>
+      </div>
+      <Button onClick={()=>{
+        redirect(`/servers/${id}`)
+      }}>Launch Slack</Button>
+    </div>
+  </div>
   );
 };
 
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required.",
-  }),
-});
 
-const Step2 = () => {
-  const { setCurrStep, updateImageUrl, imageUrl, name } =
-    useCreateWorkspaceValues();
-  const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setError(undefined);
-    setSuccess(undefined);
-    startTransition(() => {
-      axios
-        .post("/api/servers", values)
-        .then((response: any) => {
-          debugger;
-          if (response.status === 500) {
-            setError(response.data.message);
-          } else if (response.status === 200) {
-            setSuccess(response.data.message);
-            router.push(`/servers/${response.data.value.id}`);
-          }
-        })
-        .catch(() => {
-          setError("Something went wrong");
-        });
-    });
-  };
+
+const Avatar = ({ imageUrl, name }:any) => {
+  debugger
+  const initial = name.charAt(0).toUpperCase();
 
   return (
-    <>
-      <Button
-        size="sm"
-        className="text-white"
-        variant="link"
-        onClick={() => setCurrStep(1)}
-      >
-        <Typography text="Back" variant="p" />
-      </Button>
-
-      <form>
-        <Typography text="Add workspace avatar" className="my-4" />
-        <Typography
-          text="This image can be changed later in your workspace settings."
-          className="text-neutral-300"
-          variant="p"
+    <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-gray-300 flex items-center justify-center">
+      {imageUrl ? (
+        <Image
+          className="h-full w-full rounded-full"
+          src={imageUrl}
+          alt={name}
+          width={32}
+          height={32}
         />
-
-        <fieldset
-          disabled={isPending}
-          className="mt-6 flex flex-col items-center space-y-9"
-        >
-          <ImageDropZone />
-          <div className="space-x-5">
-            <Button
-              onClick={() => {
-                updateImageUrl("");
-                onSubmit({ name })
-              }}
-            >
-              <Typography text="Skip for now" variant="p" />
-            </Button>
-
-            {imageUrl ? (
-              <Button
-                type="button"
-                onClick={() => onSubmit({ name })}
-                size="sm"
-                variant="destructive"
-              >
-                <Typography text="Submit" variant="p" />
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                size="sm"
-                className="text-white bg-gray-500"
-              >
-                <Typography text="Select an Image" variant="p" />
-              </Button>
-            )}
-          </div>
-        </fieldset>
-      </form>
-    </>
+      ) : (
+        <span className="text-sm font-medium text-white">{initial}</span>
+      )}
+    </div>
   );
 };
