@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-const ImageDropZone = () => {
+const ImageDropZone = ({ onUpload }: { onUpload: (image: any) => void }) => {
   const [image, setImage] = useState<string | ArrayBuffer | null>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -33,6 +33,7 @@ const ImageDropZone = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setImage(reader.result);
+      onUpload(file);
     };
     reader.readAsDataURL(file);
   };

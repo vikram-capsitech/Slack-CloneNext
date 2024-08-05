@@ -31,7 +31,6 @@ const OrganizationSetup = () => {
       stepInView = <Step1 />;
   }
 
-
   return (
     <div>
       {/* <InitialModal /> */}
@@ -95,29 +94,41 @@ const formSchema = z.object({
   name: z.string().min(1, {
     message: "Server name is required.",
   }),
+  imageUrl: z.any().optional(),
 });
 
 const Step2 = () => {
   const { setCurrStep, updateImageUrl, imageUrl, name } =
     useCreateWorkspaceValues();
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    debugger;
     setError(undefined);
     setSuccess(undefined);
     startTransition(() => {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      if (values.imageUrl) {
+        formData.append("imageFile", values.imageUrl);
+      }
+
       axios
-        .post("/api/servers", values)
+        .post("/api/organization/create", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response: any) => {
-          debugger;
           if (response.status === 500) {
             setError(response.data.message);
           } else if (response.status === 200) {
             setSuccess(response.data.message);
-            router.push(`/servers/${response.data.value.id}`);
+            router.push(`/organization/${response.data.value.id}`);
           }
         })
         .catch(() => {
@@ -149,21 +160,26 @@ const Step2 = () => {
           disabled={isPending}
           className="mt-6 flex flex-col items-center space-y-9"
         >
-          <ImageDropZone />
+          <ImageDropZone
+            onUpload={(file) => {
+              setImageFile(file);
+              updateImageUrl(file);
+            }}
+          />
           <div className="space-x-5">
             <Button
               onClick={() => {
-                updateImageUrl("");
-                onSubmit({ name })
+                setImageFile(null);
+                onSubmit({ name });
               }}
             >
               <Typography text="Skip for now" variant="p" />
             </Button>
 
-            {imageUrl ? (
+            {imageFile ? (
               <Button
                 type="button"
-                onClick={() => onSubmit({ name })}
+                onClick={() => onSubmit({ name, imageUrl })}
                 size="sm"
                 variant="destructive"
               >
