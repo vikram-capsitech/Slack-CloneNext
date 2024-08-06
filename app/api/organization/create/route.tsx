@@ -15,61 +15,65 @@ export const config = {
 
 export async function POST(req: Request) {
   try {
+    // Parse form data from request
     const formData = await req.formData();
+    const otherFormData: Record<string, any> = {};
 
-    console.log("FILEDATA",(req as any).file)
+    // Extract non-file form data
+    formData.forEach((value, key) => {
+      if (key !== "imageFile") {
+        otherFormData[key] = value;
+      }
+    });
 
-    console.log("******************************************************",formData);
-    const otherFormData: any = {};
-    if (formData) {
-      formData.forEach((val, key) => {
-        if (key != "imageFile") otherFormData[key] = val;
-      });
-    }
+    // Extract the file from form data
+    const file = formData.get("imageFile") as any;
 
-    const file = formData.get("imageFile") as File;
-
+    // Check for the current user
     const profile = await currentUser();
-
     if (!profile) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    // Generate a custom ID
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let nanoid = customAlphabet(alphabet, 9);
+    const nanoid = customAlphabet(alphabet, 9);
     const customId = nanoid();
 
+    // Initialize image URL
     let imageUrl = "";
-    console.log("####################################################");
+
     if (file) {
-        console.log("******************************************************",file);
+      // Validate file type
       const allowedFileTypes = ["image/jpeg", "image/png"];
-      if (!allowedFileTypes.includes(file?.type))
+      if (!allowedFileTypes.includes(file.type)) {
         return NextResponse.json(
           { error: "Unsupported file type" },
           { status: 400 }
         );
-      console.log("******************************************************");
-      console.log(file?.name);
-      const blobName = file?.name;
-      const stream = file.stream();
-      console.log(stream,"ASDAKSDJHASKDJHKASJHKASJKAJSDH")
-      const streamLength = file.size;
-      var picPath = (await ScraawlBlob(
+      }
+
+      // Process file buffer and create a readable stream
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
+      const stream = Readable.from(fileBuffer);
+      const streamLength = fileBuffer.length;
+
+      // Upload file to Azure Blob Storage
+      const blobName = file.name;
+      const picPath = await ScraawlBlob(
         `Organizations/${profile.id}/profile/${blobName}`,
         stream,
         streamLength
-      )) as string;
+      ) as string;
 
       imageUrl = `${process.env.BLOB_URL}${process.env.CONTAINER_NAME}/${picPath}`;
-      console.log("******************************************************");
     }
-    console.log("####################################################");
 
+    // Create a new server record in the database
     const server = await db.server.create({
       data: {
         id: customId,
-        profileId: profile.id,
+        profileId: profile.id!,
         name: otherFormData.name,
         imageUrl,
         inviteCode: uuidv4(),
@@ -79,12 +83,12 @@ export async function POST(req: Request) {
         members: {
           create: [{ profileId: profile.id!, role: MemberRole.ADMIN }],
         },
-      } as any,
+      },
     });
 
     return NextResponse.json({
       status: 200,
-      data: server,
+      server,
       message: "Server created successfully!",
     });
   } catch (error: any) {

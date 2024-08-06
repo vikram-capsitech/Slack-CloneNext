@@ -1,18 +1,13 @@
 "use client";
+
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
-import Typography from "@/components/ui/typegraphy";
-import { Input } from "@/components/ui/input";
+import { useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { z } from "zod";
-import axios from "axios";
-import ImageDropZone from "@/components/image-upload";
 import React from "react";
 import apiClient from "@/helpers/ApiUtility";
-import { FaUser } from "react-icons/fa";
 import Image from "next/image";
-import { currentUser } from "@/lib/auth";
+import { useOrganization } from "@/providers/organization-provider";
 
 const OrganizationSetup = () => {
   const [organizations, setOrganizations] = React.useState<any[]>([]);
@@ -23,7 +18,6 @@ const OrganizationSetup = () => {
     const fetchData = async () => {
       try {
         const response = await apiClient.get("/api/organization/list");
-        debugger;
         if (response.data.status) {
           console.log(response.data.items);
           setOrganizations(response.data.items ?? []);
@@ -44,20 +38,21 @@ const OrganizationSetup = () => {
         <p className="text-sm mb-2 overflow-scroll">
           Workspaces for {user.email}
         </p>
-        {organizations.map((org) => {
-          return (
-            // eslint-disable-next-line react/jsx-key
+        <div className="h-96 overflow-auto">
+          {organizations.map((org) => (
             <Card
+              key={org.id} // Use key prop to identify each item
               name={org.name}
               image={org.imageUrl}
               id={org.id}
               members={org.members}
             />
-          );
-        })}
+          ))}
+        </div>
         <div className="bg-white p-4 flex-col rounded-lg flex items-center shadow-md">
           <p className="mb-1">Want to use Scraawl with your team?</p>
           <Button
+            style={{ cursor: "pointer" }}
             onClick={(e) => {
               router.push("/organization/create");
             }}
@@ -98,6 +93,8 @@ const Card: React.FC<CardProps> = ({ name, image, id, members }) => {
   const displayedMembers = members.slice(0, maxDisplayMembers);
   const remainingMembersCount = members.length - maxDisplayMembers;
   const router = useRouter();
+  const { setOrganization } = useOrganization();
+
   return (
     <div className="bg-purple-200 p-4 rounded-lg mb-4">
       <div className="flex items-center justify-between">
@@ -129,11 +126,15 @@ const Card: React.FC<CardProps> = ({ name, image, id, members }) => {
         </div>
         <Button
           onClick={() => {
-            debugger;
+            setOrganization({
+              id: id,
+              imageUrl: image,
+              name: name,
+            });
             router.push(`servers/${id}`);
           }}
         >
-          Launch Slack
+          Open Desk
         </Button>
       </div>
     </div>
@@ -141,7 +142,6 @@ const Card: React.FC<CardProps> = ({ name, image, id, members }) => {
 };
 
 const Avatar = ({ imageUrl, name }: any) => {
-  debugger;
   const initial = name?.charAt(0).toUpperCase();
 
   return (

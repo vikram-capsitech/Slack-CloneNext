@@ -128,7 +128,7 @@ const Step2 = () => {
             setError(response.data.message);
           } else if (response.status === 200) {
             setSuccess(response.data.message);
-            router.push(`/organization/${response.data.value.id}`);
+            router.push(`/servers/${response.data?.server?.id}`);
           }
         })
         .catch(() => {

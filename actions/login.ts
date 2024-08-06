@@ -98,7 +98,7 @@ export const login = async (
 
     console.log("organization", organization);
     if (organization.length > 0) {
-      callback = `/servers/${organization[0].id}`;
+      callback = `/organization`;
     }
   }
 
