@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { name, type } = await req.json();
     const { searchParams } = new URL(req.url);
     
-    const serverId = searchParams.get("serverId");
+    const serverId = searchParams?.get("serverId");
 
     if (!profile){
         return new NextResponse("Unauthorised" , {status : 401});

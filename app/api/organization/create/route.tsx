@@ -7,11 +7,6 @@ import { MemberRole } from "@prisma/client";
 import { Readable } from "stream";
 import { ScraawlBlob } from "@/helpers/AzureHandler";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export async function POST(req: Request) {
   try {

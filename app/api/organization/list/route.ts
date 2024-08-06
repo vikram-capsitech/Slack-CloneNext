@@ -1,9 +1,9 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest) {
+export async function GET() {
   try {
     const user = await currentUser();
 

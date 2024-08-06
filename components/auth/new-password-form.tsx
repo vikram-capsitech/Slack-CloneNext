@@ -18,15 +18,13 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { useState, useTransition } from "react";
-import { reset } from "@/actions/reset";
 import { useSearchParams } from "next/navigation";
-import { newVerification } from "@/actions/new-verification";
 import { newPassword } from "@/actions/new-password";
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();
 
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
 
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();

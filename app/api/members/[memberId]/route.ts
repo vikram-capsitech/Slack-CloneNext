@@ -10,7 +10,7 @@ export async function DELETE(
   try {
     const profile = await currentUser();
     const { searchParams } = new URL(req.url);
-    const serverId = searchParams.get("serverId");
+    const serverId = searchParams?.get("serverId");
 
     if (!profile) {
       return new NextResponse("Unauthorised", { status: 401 });
@@ -68,7 +68,7 @@ export async function PATCH(
     const { searchParams } = new URL(req.url);
     const { role } = await req.json();
 
-    const serverId = searchParams.get("serverId");
+    const serverId = searchParams?.get("serverId");
 
     if (!profile) {
       return new NextResponse("Unauthorised", { status: 401 });
