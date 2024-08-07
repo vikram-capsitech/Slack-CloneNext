@@ -33,7 +33,7 @@ export const OrganizationChannel = ({
   const Icon = iconMap[channel.type];
 
   const onClick = () =>{
-    router.push(`/client/${server?.id}/channels/${channel?.id}`)
+    router.push(`/servers/${server?.id}/channels/${channel?.id}`)
   }
 
   const onAction = (e : React.MouseEvent , action : ModalType) => {

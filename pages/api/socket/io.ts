@@ -25,7 +25,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     const io = new ServerIO(httpServer, {
       path,
       cors: {
-        origin: "*", // Allow all origins
+        origin: "*",
         methods: ["GET", "POST"],
       },
       addTrailingSlash: false,

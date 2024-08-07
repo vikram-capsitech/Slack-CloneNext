@@ -4,11 +4,12 @@ import React, { useContext } from "react";
 import Image from "next/image";
 import { useOrganization } from "@/providers/organization-provider";
 import { NavigationSidebar } from "@/components/navigation/navigation-sidebar";
+import { MainHeader } from "@/components/dashboard/header";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const { organization } = useOrganization();
   return (
-    <div className="flex flex-col h-full dark:bg-[#1E1F22] bg-[#E3E5E8]" >
+    <div className="flex flex-col h-full dark:bg-[#1E1F22] bg-[#E3E5E8]">
       {/* Header */}
       <header className="flex-shrink-0 h-10 dark:text-white text-blue-950 flex items-center px-0.5 space-x-2 pl-2">
         <Image
@@ -18,7 +19,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           width={32}
           height={32}
         />
-        <h1 className="text-xl font-semibold">{organization?.name}</h1>
+        <MainHeader organization={organization} serverId={organization?.id!} />
+        {/* <h1 className="text-xl font-semibold">{organization?.name}</h1> */}
       </header>
 
       {/* Sidebar and Main Content Container */}
