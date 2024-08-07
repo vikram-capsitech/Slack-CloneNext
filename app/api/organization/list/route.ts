@@ -41,11 +41,19 @@ export async function GET() {
       return NextResponse.json({ message: "No organization found!" });
     }
 
-    return NextResponse.json({
-      message: "Organization fetched succefully",
+    const response = NextResponse.json({
+      message: "Organization fetched successfully",
       items: organizations,
       status: true,
     });
+
+    response.headers.set("Access-Control-Allow-Origin", "*"); // Adjust origin as needed
+    response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS"); // Adjust methods as needed
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    ); // Adjust headers as needed
+    return response;
   } catch (err: any) {
     console.log("Organization_Get => ", err);
     return NextResponse.json({ error: err.message });
