@@ -107,7 +107,6 @@ const Step2 = () => {
   const router = useRouter();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    debugger;
     setError(undefined);
     setSuccess(undefined);
     startTransition(() => {

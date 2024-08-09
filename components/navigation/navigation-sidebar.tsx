@@ -14,8 +14,12 @@ import {
   FaChevronUp,
   FaFacebookMessenger,
   FaHome,
+  FaUser,
 } from "react-icons/fa";
 import apiClient from "@/helpers/ApiUtility";
+import { cn } from "@/lib/utils";
+import { GearIcon } from "@radix-ui/react-icons";
+import { UsbIcon } from "lucide-react";
 
 export const NavigationSidebar = () => {
   const [error, setError] = useState<string | undefined>();
@@ -59,19 +63,37 @@ export const NavigationSidebar = () => {
         ) : (
           <FaChevronDown className="h-2 w-2" title="Show more" />
         )}
-        {isServersVisible && (
-          <ScrollArea className="flex-1 w-full">
-            {organizations.map((organization) => (
-              <div key={organization.id} className="mb-4">
-                <NavigationItem
-                  id={organization.id}
-                  imageUrl={organization.imageUrl ?? ""}
-                  name={organization.name}
-                />
-              </div>
-            ))}
-          </ScrollArea>
-        )}
+        <div
+          className={cn(
+            "absolute top-full left-0 bg-white dark:bg-gray-800 shadow-lg rounded mt-2 z-50",
+            isServersVisible ? "block" : "hidden"
+          )}
+        >
+          {isServersVisible && (
+            <ScrollArea className="flex-1 w-full">
+              {organizations.map((organization) => (
+                <div key={organization.id} className="mb-4">
+                  <NavigationItem
+                    id={organization.id}
+                    imageUrl={organization.imageUrl ?? ""}
+                    name={organization.name}
+                  />
+                </div>
+              ))}
+            </ScrollArea>
+          )}
+        </div>
+        <div className="mt-3 flex items-center gap-x-0">
+          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
+          <GearIcon className="h-5 w-5" />
+          </div>
+          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
+            <GearIcon className="h-5 w-5" />
+          </div>
+          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
+          <GearIcon className="h-5 w-5" />
+          </div>
+        </div>
       </div>
 
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-3">

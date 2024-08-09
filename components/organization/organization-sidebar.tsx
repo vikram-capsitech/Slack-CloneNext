@@ -120,14 +120,14 @@ export const ServerSidebar = async ({
         </div>
         <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-1.5" />
         {!!textChannels?.length && (
-          <div className="mb-2">
+          <div className="mb-1">
             <ServerSection
               sectionType="channels"
               channelType={ChannelType.TEXT}
               role={role}
               label="Text Channels"
             />
-            <div className="space-y-[2px]">
+            <div className="space-y-[1px]">
               {textChannels.map((channel) => (
                 <OrganizationChannel
                   key={channel.id}
