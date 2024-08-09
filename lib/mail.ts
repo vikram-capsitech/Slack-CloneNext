@@ -166,7 +166,7 @@ export const sendVerificationEmail = async (
   name?: string
 ) => {
   const confirmLink = `${domain}/auth/new-verification?token=${token}`;
-
+  
   await transporter.sendMail({
     from: process.env.GMAIL_USER,
     to: email,

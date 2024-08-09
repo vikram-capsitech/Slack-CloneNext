@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 const ImageDropZone = ({ onUpload }: { onUpload: (image: any) => void }) => {
   const [image, setImage] = useState<string | ArrayBuffer | null>(null);
   const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -38,15 +39,35 @@ const ImageDropZone = ({ onUpload }: { onUpload: (image: any) => void }) => {
     reader.readAsDataURL(file);
   };
 
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
   return (
     <div
-      className={`flex items-center justify-center w-full h-64 border-2 border-dashed rounded-lg ${
+      className={`flex items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer ${
         dragging ? "bg-gray-200" : "bg-gray-100"
       }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      onClick={handleClick}
     >
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        accept="image/*"
+        onChange={handleFileChange}
+      />
       {image ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

@@ -21,49 +21,22 @@ import { ServerWithMembersWithProfiles } from "@/types";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface ServerHeaderProps {
   server: ServerWithMembersWithProfiles;
   role?: MemberRole;
 }
 
-export const MainHeader = async ({
+export const MainHeader = ({
   organization,
   serverId,
 }: {
   organization: any;
   serverId: string;
 }) => {
-  const profile = await currentUser();
 
-  if (!profile) {
-    return redirect("/");
-  }
 
-  const server = await db.server.findUnique({
-    where: {
-      id: serverId,
-    },
-    include: {
-      channels: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
-      members: {
-        include: {
-          profile: true,
-        },
-        orderBy: {
-          role: "asc",
-        },
-      },
-    },
-  });
-
-  const role = server?.members?.find(
-    (member) => member.profileId === profile.id
-  )?.role;
   return (
     <header className="flex-shrink-0 h-10 dark:text-white text-blue-950 flex items-center px-0.5 space-x-2 pl-2">
       <Image
