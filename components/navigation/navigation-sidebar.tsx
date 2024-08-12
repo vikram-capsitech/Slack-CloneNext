@@ -19,7 +19,7 @@ import {
 import apiClient from "@/helpers/ApiUtility";
 import { cn } from "@/lib/utils";
 import { GearIcon } from "@radix-ui/react-icons";
-import { UsbIcon } from "lucide-react";
+import { Group, MessageCircle, UsbIcon } from "lucide-react";
 
 export const NavigationSidebar = () => {
   const [error, setError] = useState<string | undefined>();
@@ -54,11 +54,21 @@ export const NavigationSidebar = () => {
         className="h-[1px] bg-zinc-300 dark:bg-zinc-700
       rounded-md w-10 mx-auto"
       />
+      <div className="mt-3 flex items-center flex-col">
+          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
+            <MessageCircle className="h-5 w-5" />
+          </div>
+          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
+            <Group className="h-5 w-5" />
+          </div>
+        </div>
       <div
         className="cursor-pointer flex-1 w-full pb-3 mt-auto flex items-center flex-col gap-y-3 hover:bg-gray-200 dark:hover:bg-gray-800"
         onClick={toggleServersVisibility}
       >
-        {isServersVisible ? (
+        {organizations.length > 1 && (
+          <>
+          {isServersVisible ? (
           <FaChevronUp className="h-2 w-2" title="Show less" />
         ) : (
           <FaChevronDown className="h-2 w-2" title="Show more" />
@@ -83,20 +93,13 @@ export const NavigationSidebar = () => {
             </ScrollArea>
           )}
         </div>
-        <div className="mt-3 flex items-center gap-x-0">
-          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
-          <GearIcon className="h-5 w-5" />
-          </div>
-          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
-            <GearIcon className="h-5 w-5" />
-          </div>
-          <div className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded cursor-pointer">
-          <GearIcon className="h-5 w-5" />
-          </div>
-        </div>
+          </>
+        )}
+        
+        
       </div>
-
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-3">
+      <GearIcon className="h-5 w-5" />
         <ModeToggle />
         <UserButton />
       </div>

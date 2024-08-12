@@ -22,6 +22,7 @@ import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useOrganization } from "@/providers/organization-provider";
 
 interface ServerHeaderProps {
   server: ServerWithMembersWithProfiles;
@@ -29,13 +30,11 @@ interface ServerHeaderProps {
 }
 
 export const MainHeader = ({
-  organization,
   serverId,
 }: {
-  organization: any;
   serverId: string;
 }) => {
-
+  const {organization} :any = useOrganization();
 
   return (
     <header className="flex-shrink-0 h-10 dark:text-white text-blue-950 flex items-center px-0.5 space-x-2 pl-2">
@@ -46,7 +45,7 @@ export const MainHeader = ({
         width={32}
         height={32}
       />
-      <h1 className="text-xl font-semibold">{organization?.name}</h1>
+      <ServerHeader server={organization} role="ADMIN"/>
     </header>
   );
 };
@@ -60,7 +59,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none" asChild>
-        <button className="w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
+        <button className=" text-xl w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
           {server.name}
           <ChevronDown className="h-5 w-5 ml-auto" />
         </button>
