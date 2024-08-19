@@ -86,8 +86,9 @@ export const NavigationSidebar = () => {
                   <NavigationItem
                     id={organization.id}
                     imageUrl={organization.imageUrl ?? ""}
-                    name={organization.name}
-                  />
+                    name={organization.name} 
+                    inviteCode={organization.inviteCode} 
+                    profileId={organization.profileId}                  />
                 </div>
               ))}
             </ScrollArea>
