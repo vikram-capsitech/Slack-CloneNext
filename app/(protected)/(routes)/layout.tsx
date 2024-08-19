@@ -12,7 +12,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="flex flex-col h-full dark:bg-[#1E1F22] bg-[#E3E5E8]">
       {/* Header */}
       <header className="flex-shrink-0 h-10 dark:text-white text-blue-950 flex items-center px-0.5 space-x-2 pl-0">
-        <MainHeader organization={organization} serverId={organization?.id!} />
+        <MainHeader serverId={organization?.id!} />
       </header>
 
       {/* Sidebar and Main Content Container */}

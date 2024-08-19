@@ -1,11 +1,19 @@
-"use client"
+"use client";
 
-import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface Organization {
   id: string;
   name: string;
   imageUrl: string;
+  profileId: string;
+  inviteCode: string;
 }
 
 interface OrganizationContextType {
@@ -13,16 +21,20 @@ interface OrganizationContextType {
   setOrganization: (org: Organization) => void;
 }
 
-const OrganizationContext = createContext<OrganizationContextType | undefined>(undefined);
+const OrganizationContext = createContext<OrganizationContextType | undefined>(
+  undefined
+);
 
-export const OrganizationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const OrganizationProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [organization, setOrganization] = useState<Organization | null>(null);
 
   useEffect(() => {
-    const storedOrganization = localStorage.getItem('organization');
+    const storedOrganization = localStorage.getItem("organization");
     if (storedOrganization) {
       setOrganization(JSON.parse(storedOrganization));
-    } 
+    }
     // else {
     //   // Fetch organization data from API
     //   fetchOrganizationData();
@@ -31,7 +43,7 @@ export const OrganizationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const setOrganizationWithLocalStorage = (org: Organization) => {
     setOrganization(org);
-    localStorage.setItem('organization', JSON.stringify(org));
+    localStorage.setItem("organization", JSON.stringify(org));
   };
 
   // const fetchOrganizationData = async () => {
@@ -42,7 +54,9 @@ export const OrganizationProvider: React.FC<{ children: ReactNode }> = ({ childr
   // };
 
   return (
-    <OrganizationContext.Provider value={{ organization, setOrganization: setOrganizationWithLocalStorage }}>
+    <OrganizationContext.Provider
+      value={{ organization, setOrganization: setOrganizationWithLocalStorage }}
+    >
       {children}
     </OrganizationContext.Provider>
   );
@@ -51,7 +65,9 @@ export const OrganizationProvider: React.FC<{ children: ReactNode }> = ({ childr
 export const useOrganization = () => {
   const context = useContext(OrganizationContext);
   if (context === undefined) {
-    throw new Error("useOrganization must be used within an OrganizationProvider");
+    throw new Error(
+      "useOrganization must be used within an OrganizationProvider"
+    );
   }
   return context;
 };

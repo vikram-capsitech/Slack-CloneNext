@@ -11,9 +11,17 @@ interface NavigationItemProps {
   id: string;
   imageUrl: string;
   name: string;
+  inviteCode: string;
+  profileId: string;
 }
 
-export const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
+export const NavigationItem = ({
+  id,
+  imageUrl,
+  name,
+  inviteCode,
+  profileId,
+}: NavigationItemProps) => {
   const params = useParams();
   const router = useRouter();
   const { setOrganization } = useOrganization();
@@ -26,6 +34,8 @@ export const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
             id: id,
             imageUrl: imageUrl,
             name: name,
+            inviteCode: inviteCode,
+            profileId: profileId,
           });
           router.push(`/servers/${id}`);
         }}

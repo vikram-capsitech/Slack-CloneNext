@@ -20,6 +20,7 @@ const OrganizationSetup = () => {
         const response = await apiClient.get("/api/organization/list");
         if (response.data.status) {
           console.log(response.data.items);
+          debugger
           setOrganizations(response.data.items ?? []);
         }
       } catch (err) {
@@ -46,6 +47,8 @@ const OrganizationSetup = () => {
               image={org.imageUrl}
               id={org.id}
               members={org.members}
+              inviteCode={org.inviteCode}
+              profileId={org.profileId}
             />
           ))}
         </div>
@@ -86,9 +89,18 @@ interface CardProps {
   image: string;
   id: string;
   members: any[];
+  profileId: string;
+  inviteCode: string;
 }
 
-const Card: React.FC<CardProps> = ({ name, image, id, members }) => {
+const Card: React.FC<CardProps> = ({
+  name,
+  image,
+  id,
+  members,
+  inviteCode,
+  profileId,
+}) => {
   const maxDisplayMembers = 4;
   const displayedMembers = members.slice(0, maxDisplayMembers);
   const remainingMembersCount = members.length - maxDisplayMembers;
@@ -130,6 +142,8 @@ const Card: React.FC<CardProps> = ({ name, image, id, members }) => {
               id: id,
               imageUrl: image,
               name: name,
+              inviteCode: inviteCode,
+              profileId: profileId,
             });
             router.push(`servers/${id}`);
           }}
